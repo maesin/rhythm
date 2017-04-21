@@ -27,25 +27,42 @@ public class PromotionManager : MonoBehaviour
     void Start()
     {
         // AdMob.
-        AdMobBanner = new BannerView(Globals.AdMobBannerUnitId, AdSize.SmartBanner, AdPosition.Bottom);
-        AdMobInterstitial = new InterstitialAd(Globals.AdMobInterstitialUnitId);
+        if (!string.IsNullOrEmpty(Globals.AdMobBannerUnitId))
+        {
+            AdMobBanner = new BannerView(Globals.AdMobBannerUnitId, AdSize.SmartBanner, AdPosition.Bottom);
+        }
 
-        var builder = new AdRequest.Builder();
+        if (!string.IsNullOrEmpty(Globals.AdMobInterstitialUnitId))
+        {
+            AdMobInterstitial = new InterstitialAd(Globals.AdMobInterstitialUnitId);
+        }
+
+        if (AdMobBanner != null || AdMobInterstitial != null)
+        {
+
+            var builder = new AdRequest.Builder();
 
 #if DEVELOPMENT_BUILD
-        builder.AddTestDevice (AdRequest.TestDeviceSimulator);
+            builder.AddTestDevice (AdRequest.TestDeviceSimulator);
 
-        foreach (var id in Globals.AdMobTestDeviceIds) {
-            builder.AddTestDevice (id);
-        }
+            foreach (var id in Globals.AdMobTestDeviceIds) {
+                builder.AddTestDevice (id);
+            }
 #endif
 
-        AdRequest request = builder.Build();
+            AdRequest request = builder.Build();
 
-        AdMobBanner.LoadAd(request);
-        AdMobInterstitial.LoadAd(request);
+            if (AdMobBanner != null)
+            {
+                AdMobBanner.LoadAd(request);
+                AdMobBanner.Hide();
+            }
 
-        OnBannerHide();
+            if (AdMobInterstitial != null)
+            {
+                AdMobInterstitial.LoadAd(request);
+            }
+        }
     }
 
     /// <summary>
@@ -61,7 +78,10 @@ public class PromotionManager : MonoBehaviour
     /// </summary>
     public void OnBannerShow()
     {
-        AdMobBanner.Show();
+        if (AdMobBanner != null)
+        {
+            AdMobBanner.Show();
+        }
     }
 
     /// <summary>
@@ -69,7 +89,10 @@ public class PromotionManager : MonoBehaviour
     /// </summary>
     public void OnBannerHide()
     {
-        AdMobBanner.Hide();
+        if (AdMobBanner != null)
+        {
+            AdMobBanner.Hide();
+        }
     }
 
     /// <summary>
@@ -77,6 +100,9 @@ public class PromotionManager : MonoBehaviour
     /// </summary>
     public void OnInterstitialShow()
     {
-        AdMobInterstitial.Show();
+        if (AdMobInterstitial != null)
+        {
+            AdMobInterstitial.Show();
+        }
     }
 }
